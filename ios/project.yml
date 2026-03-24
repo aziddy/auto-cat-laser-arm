@@ -1,0 +1,33 @@
+name: CatLaser
+options:
+  bundleIdPrefix: com.catlaser
+  deploymentTarget:
+    iOS: "15.0"
+
+targets:
+  CatLaser:
+    type: application
+    platform: iOS
+    sources:
+      - CatLaser
+    info:
+      path: CatLaser/Info.plist
+      properties:
+        UILaunchScreen: {}
+        NSAppTransportSecurity:
+          NSAllowsLocalNetworking: true
+        NSLocalNetworkUsageDescription: "CatLaser connects to the ESP32 cat laser controller on your local WiFi network."
+        NSBonjourServices:
+          - _http._tcp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.catlaser.app
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        SWIFT_VERSION: "5.9"
+        TARGETED_DEVICE_FAMILY: "1"
+        GENERATE_INFOPLIST_FILE: false
+        INFOPLIST_FILE: CatLaser/Info.plist
+    dependencies:
+      - sdk: GameController.framework
+      - sdk: WebKit.framework

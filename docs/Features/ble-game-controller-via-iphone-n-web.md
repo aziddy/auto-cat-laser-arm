@@ -26,7 +26,7 @@ The Gamepad API (`navigator.getGamepads()`) returns empty arrays on `http://` pa
 ### Possible Future Approaches
 - **ESP32-S3 or ESP32-C3** — faster crypto hardware, may handle TLS better
 - **BLE HID host on ESP32** — read controller directly via Bluetooth, bypass web Gamepad API entirely
-- **Native iOS app** — read controller via GCController framework, send to ESP32 over HTTP
+- **~~Native iOS app~~ — IMPLEMENTED** — see `ios/CatLaser/` — WKWebView wrapper with `GCController` framework reads controller natively, injects stick values into the web page via `window.setAnglesFromStick()` bridge function
 - **Dual-server architecture** — HTTP for fast touch control, HTTPS for slower gamepad mode (user chooses)
 - **Wait for browser changes** — if Safari ever relaxes the secure context requirement for local/private IPs
 

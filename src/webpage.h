@@ -245,6 +245,30 @@ const char index_html[] PROGMEM = R"rawliteral(
     sendAngles();
     requestAnimationFrame(draw);
   }
+
+  // Bridge for native iOS app (GCController → JS)
+  // lx: left stick X (-1 left, +1 right), ly: left stick Y (-1 down, +1 up)
+  window.setAnglesFromStick = function(lx, ly) {
+    var now = Date.now();
+    if (now - lastSend < SEND_INTERVAL) return;
+    lastSend = now;
+
+    if (document.getElementById('panLimit').checked) {
+      angle1 = Math.round((-lx + 1) * 70 + 40);
+      angle1 = Math.max(40, Math.min(180, angle1));
+    } else {
+      angle1 = Math.round((-lx + 1) * 90);
+      angle1 = Math.max(0, Math.min(180, angle1));
+    }
+    angle2 = Math.round((ly + 1) * 50 + 80);
+    angle2 = Math.max(80, Math.min(180, angle2));
+
+    thumbX = cx + lx * radius;
+    thumbY = cy - ly * radius;
+    anglesEl.textContent = 'Pan: ' + angle1 + '\u00B0   Tilt: ' + angle2 + '\u00B0';
+    sendAngles();
+    requestAnimationFrame(draw);
+  };
 })();
 </script>
 </body>
