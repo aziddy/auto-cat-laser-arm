@@ -6,6 +6,7 @@ import WebKit
 class GameControllerManager: ObservableObject {
     @Published var controllerName: String?
     @Published var controllerEnabled = true
+    @Published var relativeMode = false
 
     weak var webView: WKWebView?
     var isPageReady = false
@@ -105,7 +106,15 @@ class GameControllerManager: ObservableObject {
         if abs(lx) < deadzone { lx = 0 }
         if abs(ly) < deadzone { ly = 0 }
 
-        let js = "if(window.setAnglesFromStick)window.setAnglesFromStick(\(lx),\(ly))"
+        // In relative mode, skip when stick is centered (no movement needed)
+        if relativeMode && lx == 0 && ly == 0 { return }
+
+        let js: String
+        if relativeMode {
+            js = "if(window.setAnglesFromStickRelative)window.setAnglesFromStickRelative(\(lx),\(ly),2)"
+        } else {
+            js = "if(window.setAnglesFromStick)window.setAnglesFromStick(\(lx),\(ly))"
+        }
         webView.evaluateJavaScript(js) { _, error in
             if let error { print("[CatLaser] JS error: \(error)") }
         }

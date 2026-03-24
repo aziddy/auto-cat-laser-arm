@@ -62,6 +62,20 @@ struct ContentView: View {
 
                         Spacer()
 
+                        if gameController.controllerName != nil && gameController.controllerEnabled {
+                            Button(action: {
+                                gameController.relativeMode.toggle()
+                            }) {
+                                Text(gameController.relativeMode ? "REL" : "ABS")
+                                    .font(.caption2.bold())
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(.ultraThinMaterial)
+                                    .cornerRadius(8)
+                            }
+                            .padding(.top, 50)
+                        }
+
                         if let name = gameController.controllerName {
                             Button(action: {
                                 gameController.controllerEnabled.toggle()

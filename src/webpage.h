@@ -269,6 +269,31 @@ const char index_html[] PROGMEM = R"rawliteral(
     sendAngles();
     requestAnimationFrame(draw);
   };
+
+  // Relative mode: stick controls rate of change, not absolute position
+  // lx/ly in [-1, 1], speed in degrees per frame
+  window.setAnglesFromStickRelative = function(lx, ly, speed) {
+    var now = Date.now();
+    if (now - lastSend < SEND_INTERVAL) return;
+    lastSend = now;
+
+    angle1 -= Math.round(lx * speed);
+    angle2 += Math.round(ly * speed);
+
+    var panMin = document.getElementById('panLimit').checked ? 40 : 0;
+    angle1 = Math.max(panMin, Math.min(180, angle1));
+    angle2 = Math.max(80, Math.min(180, angle2));
+
+    // Reverse-map angles to thumb position
+    var panRange = document.getElementById('panLimit').checked ? 70 : 90;
+    var panOffset = document.getElementById('panLimit').checked ? 40 : 0;
+    thumbX = cx + ((-(angle1 - panOffset) / panRange + 1)) * radius;
+    thumbY = cy - ((angle2 - 80) / 50 - 1) * radius;
+
+    anglesEl.textContent = 'Pan: ' + angle1 + '\u00B0   Tilt: ' + angle2 + '\u00B0';
+    sendAngles();
+    requestAnimationFrame(draw);
+  };
 })();
 </script>
 </body>
