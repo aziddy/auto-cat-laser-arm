@@ -9,8 +9,8 @@ const char *AP_SSID = "CatLaser";
 const char *AP_PASS = "pew-pew-pew";
 
 // Servo pins (from docs/REV1-PROTOBOARD/Wiring.md)
-#define SERVO1_PIN 25 // Pan (X axis)
-#define SERVO2_PIN 26 // Tilt (Y axis)
+#define SERVO1_PIN 25 // Tilt (Y axis)
+#define SERVO2_PIN 26 // Pan (X axis)
 
 // Servo pulse range for MG995-180
 #define SERVO_MIN_US 500
@@ -127,11 +127,11 @@ const char index_html[] PROGMEM = R"rawliteral(
     ctx.fillStyle = '#3a3a5a';
     ctx.font = '12px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('PAN', cx, cy - radius - 8);
+    ctx.fillText('TILT', cx, cy - radius - 8);
     ctx.save();
     ctx.translate(cx - radius - 8, cy);
     ctx.rotate(-Math.PI / 2);
-    ctx.fillText('TILT', 0, 0);
+    ctx.fillText('PAN', 0, 0);
     ctx.restore();
 
     // Thumb shadow
@@ -279,13 +279,13 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client,
       int a2 = constrain(atoi(comma + 1), 0, 180);
 
       // Only write if angle changed (reduces jitter)
-      if (abs(a1 - lastAngle1) >= 1) {
-        servo1.write(a1);
-        lastAngle1 = a1;
-      }
       if (abs(a2 - lastAngle2) >= 1) {
-        servo2.write(a2);
+        servo1.write(a2);  // servo1 (pin 25) = tilt, gets Y-axis angle
         lastAngle2 = a2;
+      }
+      if (abs(a1 - lastAngle1) >= 1) {
+        servo2.write(a1);  // servo2 (pin 26) = pan, gets X-axis angle
+        lastAngle1 = a1;
       }
     }
   }
