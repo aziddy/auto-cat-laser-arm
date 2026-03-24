@@ -202,7 +202,7 @@ const char index_html[] PROGMEM = R"rawliteral(
     touching = true;
 
     // Map to servo angles
-    angle1 = Math.round(((dx / radius) + 1) * 90);          // left=0, right=180
+    angle1 = Math.round(((-dx / radius) + 1) * 90);         // left=180, right=0
     angle2 = Math.round(((-dy / radius) + 1) * 50 + 80);    // top=180, bottom=80
     angle1 = Math.max(0, Math.min(180, angle1));
     angle2 = Math.max(80, Math.min(180, angle2));
@@ -243,7 +243,7 @@ const char index_html[] PROGMEM = R"rawliteral(
     thumbY = cy + dy;
     touching = true;
 
-    angle1 = Math.round(((dx / radius) + 1) * 90);          // left=0, right=180
+    angle1 = Math.round(((-dx / radius) + 1) * 90);         // left=180, right=0
     angle2 = Math.round(((-dy / radius) + 1) * 50 + 80);    // top=180, bottom=80
     angle1 = Math.max(0, Math.min(180, angle1));
     angle2 = Math.max(80, Math.min(180, angle2));
