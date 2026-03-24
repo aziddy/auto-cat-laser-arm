@@ -1,6 +1,14 @@
 # OS files
 .DS_Store
 
+# ESP32 WiFi/relay credentials
+src/config.h
+
+# Relay server
+relay-server/node_modules/
+relay-server/dist/
+relay-server/certs/*.pem
+
 # PlatformIO
 .pio/
 

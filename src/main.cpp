@@ -1,13 +1,10 @@
 #include <Arduino.h>
 #include <WiFi.h>
-#include <DNSServer.h>
-#include <ESPAsyncWebServer.h>
 #include <ESP32Servo.h>
-#include "webpage.h"
+#include <ArduinoWebsockets.h>
+#include "config.h"
 
-// WiFi AP settings
-const char *AP_SSID = "CatLaser";
-const char *AP_PASS = "pew-pew-pew";
+using namespace websockets;
 
 // Servo pins (from docs/REV1-PROTOBOARD/Wiring.md)
 #define SERVO1_PIN 25 // Tilt (Y axis)
@@ -19,44 +16,46 @@ const char *AP_PASS = "pew-pew-pew";
 
 Servo servo1;
 Servo servo2;
-AsyncWebServer server(80);
-AsyncWebSocket ws("/ws");
-DNSServer dnsServer;
+WebsocketsClient client;
 
 int lastAngle1 = 90;
 int lastAngle2 = 90;
+unsigned long lastReconnect = 0;
+const unsigned long RECONNECT_INTERVAL = 2000;
 
-// ─── WebSocket Event Handler ───
+// ─── WebSocket Message Handler ───
 
-void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client,
-               AwsEventType type, void *arg, uint8_t *data, size_t len) {
-  if (type == WS_EVT_CONNECT) {
-    Serial.printf("WebSocket client #%u connected\n", client->id());
-  } else if (type == WS_EVT_DISCONNECT) {
-    Serial.printf("WebSocket client #%u disconnected\n", client->id());
-  } else if (type == WS_EVT_DATA) {
-    // Parse "angle1,angle2"
-    char msg[len + 1];
-    memcpy(msg, data, len);
-    msg[len] = '\0';
+void onMessage(WebsocketsMessage msg) {
+  String data = msg.data();
+  int comma = data.indexOf(',');
+  if (comma > 0) {
+    int a1 = constrain(data.substring(0, comma).toInt(), 0, 180);
+    int a2 = constrain(data.substring(comma + 1).toInt(), 80, 180);
 
-    char *comma = strchr(msg, ',');
-    if (comma) {
-      *comma = '\0';
-      int a1 = constrain(atoi(msg), 0, 180);
-      int a2 = constrain(atoi(comma + 1), 80, 180);
-
-      // Only write if angle changed (reduces jitter)
-      if (abs(a2 - lastAngle2) >= 1) {
-        servo1.write(a2);  // servo1 (pin 25) = tilt, gets Y-axis angle
-        lastAngle2 = a2;
-      }
-      if (abs(a1 - lastAngle1) >= 1) {
-        servo2.write(a1);  // servo2 (pin 26) = pan, gets X-axis angle
-        lastAngle1 = a1;
-      }
+    // Only write if angle changed (reduces jitter)
+    if (abs(a1 - lastAngle1) >= 1) {
+      servo2.write(a1);  // servo2 (pin 26) = pan, gets X-axis angle
+      lastAngle1 = a1;
+    }
+    if (abs(a2 - lastAngle2) >= 1) {
+      servo1.write(a2);  // servo1 (pin 25) = tilt, gets Y-axis angle
+      lastAngle2 = a2;
     }
   }
+}
+
+void onEvent(WebsocketsEvent event, String data) {
+  if (event == WebsocketsEvent::ConnectionOpened) {
+    Serial.println("WebSocket connected to relay");
+  } else if (event == WebsocketsEvent::ConnectionClosed) {
+    Serial.println("WebSocket disconnected from relay");
+  }
+}
+
+void connectToRelay() {
+  String url = String("ws://") + RELAY_HOST + ":" + RELAY_PORT + "/esp";
+  Serial.printf("Connecting to relay: %s\n", url.c_str());
+  client.connect(url);
 }
 
 // ─── Setup ───
@@ -76,49 +75,40 @@ void setup() {
 
   Serial.println("Servos attached and centered");
 
-  // Start WiFi Access Point
-  WiFi.mode(WIFI_AP);
-  WiFi.softAPConfig(IPAddress(192, 168, 4, 1), IPAddress(192, 168, 4, 1),
-                     IPAddress(255, 255, 255, 0));
-  WiFi.softAP(AP_SSID, AP_PASS);
-  Serial.printf("AP started: %s\n", AP_SSID);
-  Serial.printf("IP: %s\n", WiFi.softAPIP().toString().c_str());
+  // Connect to WiFi
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  Serial.printf("Connecting to WiFi: %s", WIFI_SSID);
 
-  // DNS server for captive portal — redirect all domains to us
-  dnsServer.start(53, "*", WiFi.softAPIP());
+  unsigned long startAttempt = millis();
+  while (WiFi.status() != WL_CONNECTED && millis() - startAttempt < 20000) {
+    delay(500);
+    Serial.print(".");
+  }
 
-  // Serve the gamepad page
-  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send_P(200, "text/html", index_html);
-  });
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("\nWiFi connection failed — restarting");
+    ESP.restart();
+  }
 
-  // Captive portal detection endpoints
-  server.on("/hotspot-detect.html", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send_P(200, "text/html", index_html);
-  });
-  server.on("/generate_204", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send_P(200, "text/html", index_html);
-  });
-  server.on("/connecttest.txt", HTTP_GET, [](AsyncWebServerRequest *request) {
-    request->send_P(200, "text/html", index_html);
-  });
+  Serial.printf("\nWiFi connected — IP: %s\n", WiFi.localIP().toString().c_str());
 
-  // Redirect everything else to root
-  server.onNotFound([](AsyncWebServerRequest *request) {
-    request->redirect("/");
-  });
-
-  // WebSocket
-  ws.onEvent(onWsEvent);
-  server.addHandler(&ws);
-
-  server.begin();
-  Serial.println("Web server started — connect to CatLaser WiFi and open 192.168.4.1");
+  // WebSocket client
+  client.onMessage(onMessage);
+  client.onEvent(onEvent);
+  connectToRelay();
 }
 
 // ─── Loop ───
 
 void loop() {
-  dnsServer.processNextRequest();
-  ws.cleanupClients(2); // Max 2 simultaneous WebSocket clients
+  client.poll();
+
+  if (!client.available()) {
+    unsigned long now = millis();
+    if (now - lastReconnect >= RECONNECT_INTERVAL) {
+      lastReconnect = now;
+      connectToRelay();
+    }
+  }
 }
