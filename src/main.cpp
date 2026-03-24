@@ -201,11 +201,11 @@ const char index_html[] PROGMEM = R"rawliteral(
     thumbY = cy + dy;
     touching = true;
 
-    // Map to servo angles (0-180)
-    angle1 = Math.round(((dx / radius) + 1) * 90);  // left=0, right=180
-    angle2 = Math.round(((-dy / radius) + 1) * 90);  // top=180, bottom=0
+    // Map to servo angles
+    angle1 = Math.round(((dx / radius) + 1) * 90);          // left=0, right=180
+    angle2 = Math.round(((-dy / radius) + 1) * 50 + 80);    // top=180, bottom=80
     angle1 = Math.max(0, Math.min(180, angle1));
-    angle2 = Math.max(0, Math.min(180, angle2));
+    angle2 = Math.max(80, Math.min(180, angle2));
 
     anglesEl.textContent = 'Pan: ' + angle1 + '\u00B0   Tilt: ' + angle2 + '\u00B0';
     sendAngles();
@@ -243,10 +243,10 @@ const char index_html[] PROGMEM = R"rawliteral(
     thumbY = cy + dy;
     touching = true;
 
-    angle1 = Math.round(((dx / radius) + 1) * 90);
-    angle2 = Math.round(((-dy / radius) + 1) * 90);
+    angle1 = Math.round(((dx / radius) + 1) * 90);          // left=0, right=180
+    angle2 = Math.round(((-dy / radius) + 1) * 50 + 80);    // top=180, bottom=80
     angle1 = Math.max(0, Math.min(180, angle1));
-    angle2 = Math.max(0, Math.min(180, angle2));
+    angle2 = Math.max(80, Math.min(180, angle2));
 
     anglesEl.textContent = 'Pan: ' + angle1 + '\u00B0   Tilt: ' + angle2 + '\u00B0';
     sendAngles();
@@ -276,7 +276,7 @@ void onWsEvent(AsyncWebSocket *server, AsyncWebSocketClient *client,
     if (comma) {
       *comma = '\0';
       int a1 = constrain(atoi(msg), 0, 180);
-      int a2 = constrain(atoi(comma + 1), 0, 180);
+      int a2 = constrain(atoi(comma + 1), 80, 180);
 
       // Only write if angle changed (reduces jitter)
       if (abs(a2 - lastAngle2) >= 1) {
