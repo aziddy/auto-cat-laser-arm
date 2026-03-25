@@ -6,7 +6,7 @@ import WebKit
 class GameControllerManager: ObservableObject {
     @Published var controllerName: String?
     @Published var controllerEnabled = true
-    @Published var relativeMode = false
+    @Published var relativeMode = true
 
     weak var webView: WKWebView?
     var isPageReady = false

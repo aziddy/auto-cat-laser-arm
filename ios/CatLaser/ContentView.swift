@@ -1,4 +1,5 @@
 import SwiftUI
+import NetworkExtension
 
 struct ContentView: View {
     @StateObject private var gameController = GameControllerManager()
@@ -33,6 +34,20 @@ struct ContentView: View {
                         .font(.subheadline)
                         .foregroundStyle(.gray)
                         .multilineTextAlignment(.center)
+                    Button("Join CatLaser WiFi") {
+                        let config = NEHotspotConfiguration(ssid: "CatLaser", passphrase: "pew-pew-pew", isWEP: false)
+                        config.joinOnce = false
+                        NEHotspotConfigurationManager.shared.apply(config) { error in
+                            if error == nil || (error as? NSError)?.code == NEHotspotConfigurationError.alreadyAssociated.rawValue {
+                                // Connected or already on CatLaser — reload
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                                    gameController.webView?.load(URLRequest(url: URL(string: "http://192.168.4.1/")!))
+                                }
+                            }
+                        }
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(.blue)
                     Button("Try Again") {
                         if let webView = gameController.webView {
                             webView.load(URLRequest(url: URL(string: "http://192.168.4.1/")!))

@@ -28,6 +28,8 @@ targets:
         TARGETED_DEVICE_FAMILY: "1"
         GENERATE_INFOPLIST_FILE: false
         INFOPLIST_FILE: CatLaser/Info.plist
+        CODE_SIGN_ENTITLEMENTS: CatLaser/CatLaser.entitlements
     dependencies:
       - sdk: GameController.framework
       - sdk: WebKit.framework
+      - sdk: NetworkExtension.framework

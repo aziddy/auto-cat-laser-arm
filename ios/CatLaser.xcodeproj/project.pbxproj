@@ -3,22 +3,25 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		19E7131355C9B391B56C04C0 /* GameControllerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D40E4EAE45676B44FA961C6 /* GameControllerManager.swift */; };
 		215A6144AFE656F4E28EF4C6 /* WebKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = F64C17D0F5DD72CE98C46578 /* WebKit.framework */; };
 		710AC38D7B43421D27AEF378 /* WebViewRepresentable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A786EC54E2F968E74FADEF08 /* WebViewRepresentable.swift */; };
+		A26CF591EB08AD1DDC2CFA57 /* NetworkExtension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6665CFD8374B30C10319AED2 /* NetworkExtension.framework */; };
 		A908F2AC227E70F7F4C8CFC7 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83FB837656CC077E99C57031 /* ContentView.swift */; };
 		C4075B6364DB184DADB2DF51 /* CatLaserApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49F47CF3F52E0097E97EF2F0 /* CatLaserApp.swift */; };
 		E554B23EE6287EB770FECACA /* GameController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CBD49C187B2680FFEA9AC6B9 /* GameController.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		0089AD007CE9BE9DBC488983 /* CatLaser.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CatLaser.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0089AD007CE9BE9DBC488983 /* CatLaser.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = CatLaser.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3D40E4EAE45676B44FA961C6 /* GameControllerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameControllerManager.swift; sourceTree = "<group>"; };
 		49F47CF3F52E0097E97EF2F0 /* CatLaserApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CatLaserApp.swift; sourceTree = "<group>"; };
+		6665CFD8374B30C10319AED2 /* NetworkExtension.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = NetworkExtension.framework; path = System/Library/Frameworks/NetworkExtension.framework; sourceTree = SDKROOT; };
+		6C2F2ADEC3BF04AEE4D42066 /* CatLaser.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = CatLaser.entitlements; sourceTree = "<group>"; };
 		80A5D6F5A0F326E49BC9DF9E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		83FB837656CC077E99C57031 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		A786EC54E2F968E74FADEF08 /* WebViewRepresentable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewRepresentable.swift; sourceTree = "<group>"; };
@@ -33,6 +36,7 @@
 			files = (
 				E554B23EE6287EB770FECACA /* GameController.framework in Frameworks */,
 				215A6144AFE656F4E28EF4C6 /* WebKit.framework in Frameworks */,
+				A26CF591EB08AD1DDC2CFA57 /* NetworkExtension.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -60,6 +64,7 @@
 			isa = PBXGroup;
 			children = (
 				CBD49C187B2680FFEA9AC6B9 /* GameController.framework */,
+				6665CFD8374B30C10319AED2 /* NetworkExtension.framework */,
 				F64C17D0F5DD72CE98C46578 /* WebKit.framework */,
 			);
 			name = Frameworks;
@@ -68,6 +73,7 @@
 		D430273E04B5E00BA5AD6FE4 /* CatLaser */ = {
 			isa = PBXGroup;
 			children = (
+				6C2F2ADEC3BF04AEE4D42066 /* CatLaser.entitlements */,
 				49F47CF3F52E0097E97EF2F0 /* CatLaserApp.swift */,
 				83FB837656CC077E99C57031 /* ContentView.swift */,
 				3D40E4EAE45676B44FA961C6 /* GameControllerManager.swift */,
@@ -117,6 +123,7 @@
 			);
 			mainGroup = A928498BC45086081092BE1D;
 			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -207,9 +214,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = CatLaser/CatLaser.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 9JR2GW6CWR;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = CatLaser/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -284,9 +291,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = CatLaser/CatLaser.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 9JR2GW6CWR;
 				GENERATE_INFOPLIST_FILE = NO;
 				INFOPLIST_FILE = CatLaser/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
